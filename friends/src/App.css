@@ -4,8 +4,8 @@
 
 .friends h1{
   font-size: 2rem;
-  border-bottom: 3px solid red;
-  margin: 2rem 5rem;
+  border-bottom: 3px solid grey;
+  margin: 2rem 5rem 0;
 }
 
 .friend-holder{
