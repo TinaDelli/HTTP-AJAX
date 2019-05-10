@@ -13,31 +13,31 @@ class UpdateForm extends React.Component {
 
     handleChanges = event =>{
     this.setState( {
-        // friend: {
-        //     ...this.state.friend,
-        //     [event.target.name]: event.target.value
-        // }
-        [event.target.name]: event.target.value
+        friend: {
+            ...this.state.friend,
+            [event.target.name]: event.target.value
+        }
     });
 }
 
     handleSubmit = event => {
         event.preventDefault();
-        this.props.updateFriend(this.state);
-        console.log(this.state)
+        this.props.updateFriend(this.state.friend);
+        // console.log(this.state)
     }
 
 render(){
+    console.log(this.props.activeFriend.name)
     return (
             <div>
                 <h1>Update Friend Info</h1>
                 <form onSubmit={this.handleSubmit}>
                     <label >Name</label>
-                    <input type='text' placeholder="Name" onChange={e => this.handleChanges(e)} value= {this.state.name} name="name"></input>
+                    <input type='text' placeholder="Name" onChange={e => this.handleChanges(e)} value= {this.state.friend.name} name="name" />
                     <label >Age</label>
-                    <input type="number" placeholder="Age" onChange={e => this.handleChanges(e)} value= {this.state.age} name="age"></input>
+                    <input type="number" placeholder="Age" onChange={e => this.handleChanges(e)} value= {this.state.friend.age} name="age" />
                     <label >Email</label>
-                    <input type="email" placeholder="Email" onChange={e => this.handleChanges(e)} value= {this.state.email} name="email"></input>
+                    <input type="email" placeholder="Email" onChange={e => this.handleChanges(e)} value= {this.state.friend.email} name="email" />
                     <button>Update Friend Info</button>
                 </form>
             </div>

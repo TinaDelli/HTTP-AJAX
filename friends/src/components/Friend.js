@@ -30,7 +30,7 @@ class Friend extends React.Component {
 
     }
 
-    updateFriend = (updatedFriend) => {
+    updateFriend = updatedFriend => {
         axios
         .put(`http://localhost:5000/friends/${updatedFriend.id}`, updatedFriend)
         .then(res => this.setState({
@@ -40,8 +40,7 @@ class Friend extends React.Component {
         this.props.history.push(`/`)
     }
 
-    deleteFriend = (id, event) => {
-        event.preventDefault();
+    deleteFriend = id => {
         axios
         .delete(`http://localhost:5000/friends/${id}`)
         .then(res => this.setState({friends:res.data}))
@@ -49,8 +48,8 @@ class Friend extends React.Component {
         this.props.history.push('/');
     }
 
-    setUpdateForm = friends => {
-        this.setState({activeFriend: friends});
+    setUpdateForm = friend => {
+        this.setState({activeFriend: friend});
         this.props.history.push('/update-form')
     }
 
