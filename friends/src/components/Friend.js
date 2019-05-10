@@ -4,10 +4,12 @@ import {Route, withRouter, NavLink} from "react-router-dom";
 
 import FriendCard from './FriendCard';
 import FriendForm from './FriendForm';
+import UpdateForm from './UpdateForm';
 
 class Friend extends React.Component {
     state = {
-        friends: []
+        friends: [],
+        activeFriend: {}
     };
 
     componentDidMount(){
@@ -28,6 +30,31 @@ class Friend extends React.Component {
 
     }
 
+    updateFriend = (updatedFriend) => {
+        axios
+        .put(`http://localhost:5000/friends/${updatedFriend.id}`, updatedFriend)
+        .then(res => this.setState({
+            friends: res.data
+        }))
+        .catch(err => console.log(err));
+        this.props.history.push(`/`)
+    }
+
+    deleteFriend = (id, event) => {
+        event.preventDefault();
+        axios
+        .delete(`http://localhost:5000/friends/${id}`)
+        .then(res => this.setState({friends:res.data}))
+        .catch(err => console.log(err));
+        this.props.history.push('/');
+    }
+
+    setUpdateForm = friends => {
+        this.setState({activeFriend: friends});
+        this.props.history.push('/update-form')
+    }
+
+
     render(){
         return (
             <>
@@ -43,9 +70,14 @@ class Friend extends React.Component {
                     <Route 
                     path="/friend-form"
                     render={props => <FriendForm {...props} addFriend={this.addFriend} />} />
+                    <Route 
+                    exact
+                    path= "/update-form"
+                    render={props => (<UpdateForm {...props} updateFriend ={this.updateFriend} activeFriend={this.state.activeFriend}/>)}
+                    />
                 
                     {this.state.friends.map(friend => (
-                    <FriendCard  friend={friend} key={friend.id}/>
+                    <FriendCard  friend={friend} key={friend.id} deleteFriend={this.deleteFriend} setUpdateForm={this.setUpdateForm} />
                     ))}
                 </div>
                 
