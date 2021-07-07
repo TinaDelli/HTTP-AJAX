@@ -1,17 +1,15 @@
 import React from 'react';
 import axios from 'axios';
+import {Route, withRouter, NavLink} from "react-router-dom";
 
 import FriendCard from './FriendCard';
+import FriendForm from './FriendForm';
+import UpdateForm from './UpdateForm';
 
 class Friend extends React.Component {
     state = {
         friends: [],
-        friend: {
-            name: "",
-            age: "",
-            email: "",
-            id: "",
-        }
+        activeFriend: {}
     };
 
     componentDidMount(){
@@ -20,53 +18,75 @@ class Friend extends React.Component {
         .then(res => {
             this.setState({friends: res.data});
         })
+        .catch(err => alert(`Oops! You got ${err}!`));
+    }
+
+    addFriend = friend =>{
+        axios
+        .post("http://localhost:5000/friends", friend)
+        .then(res => this.setState({friends: res.data}))
         .catch(err => console.log(err));
+        this.props.history.push(`/`)
+
     }
 
-    handleChanges = e => {
-        this.setState({
-            friend: {...this.state.friend,
-            [e.target.name]: e.target.value
-            }
-        })
+    updateFriend = updatedFriend => {
+        axios
+        .put(`http://localhost:5000/friends/${updatedFriend.id}`, updatedFriend)
+        .then(res => this.setState({
+            friends: res.data
+        }))
+        .catch(err => console.log(err));
+        this.props.history.push(`/`)
     }
 
-    addFriend = e =>{
-        e.preventDefault();
-        this.setState({
-            friends: [...this.state.friends, this.state.friend],
-            friend: {
-                name:"",
-                age: "",
-                email:"",
-                id:Date.now()
-            }
-        })
+    deleteFriend = id => {
+        axios
+        .delete(`http://localhost:5000/friends/${id}`)
+        .then(res => this.setState({friends:res.data}))
+        .catch(err => console.log(err));
+        this.props.history.push('/');
     }
+
+    setUpdateForm = friend => {
+        this.setState({activeFriend: friend});
+        this.props.history.push('/update-form')
+    }
+
 
     render(){
         return (
+            <>
             <div className="friends">
-                <h1>Friends List</h1>
-                    <div className="friend-holder">
-                        {this.state.friends.map(friend => (
-                        <FriendCard  friend={friend} key={friend.id}/>
-                        ))}
-                        <form onSubmit={this.addFriend}>
-                            <h1>Have A New Friend?</h1>
-                            <label for="name">Name</label>
-                            <input type="text" placeholder="Name" onChange={this.handleChanges} value= {this.state.friend.name} name="name"></input>
-                            <label for="age">Age</label>
-                            <input type="text" placeholder="Age" onChange={this.handleChanges} value= {this.state.friend.age} name="age"></input>
-                            <label for="email">Email</label>
-                            <input type="text" placeholder="Email" onChange={this.handleChanges} value= {this.state.friend.email} name="email"></input>
-                            <button>Add New Friend</button>
-                        </form>
-                    </div>
+                <nav>
+                    <h1>Friends List</h1>
+                    <NavLink  to="/" >
+                        Friend's List
+                    </NavLink>
+                    <NavLink to="/friend-form">Add Friend</NavLink>
+                </nav>
+                <div className="friend-holder">
+                    <Route 
+                    path="/friend-form"
+                    render={props => <FriendForm {...props} addFriend={this.addFriend} />} />
+                    <Route 
+                    exact
+                    path= "/update-form"
+                    render={props => (<UpdateForm {...props} updateFriend ={this.updateFriend} activeFriend={this.state.activeFriend}/>)}
+                    />
+                
+                    {this.state.friends.map(friend => (
+                    <FriendCard  friend={friend} key={friend.id} deleteFriend={this.deleteFriend} setUpdateForm={this.setUpdateForm} />
+                    ))}
+                </div>
+                
             </div>
+             
+             </>
         )
     }
 
 }
 
-export default Friend;
+const FriendWithRouter= withRouter(Friend);
+export default FriendWithRouter;
